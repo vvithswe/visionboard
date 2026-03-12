@@ -1,77 +1,108 @@
-# CLAUDE.md — AI Assistant Guide for visionboard
+# CLAUDE.md — AI Assistant Guide for Dream Home Vision Board
 
-This file provides context and conventions for AI assistants (Claude, Copilot, etc.) working in this repository. Update it as the project evolves.
+This file provides context and conventions for AI assistants working in this repository.
 
 ## Project Overview
 
-**visionboard** is a project currently in its initial setup phase. This file should be updated with a description of the project's purpose, target users, and core functionality once development begins.
+**Dream Home Vision Board** is a React single-page application for curating home design inspiration. Users create vision boards (e.g., "Modern Farmhouse", "Cozy Cabin"), then pin images with titles, notes, and room categories. All data is persisted in the browser via localStorage.
 
-## Repository State
+## Tech Stack
 
-This repository was initialized with a single README.md. All scaffolding, tooling, and source code is yet to be added.
+- **Framework**: React 19 with Vite 7
+- **Routing**: React Router v7 (`react-router-dom`)
+- **Icons**: Lucide React
+- **IDs**: `uuid` (v4)
+- **Styling**: Plain CSS with CSS custom properties (no CSS framework)
+- **Storage**: localStorage (no backend)
 
 ## Development Setup
 
-> Update this section once a technology stack is chosen.
+```bash
+npm install        # Install dependencies
+npm run dev        # Start dev server (Vite)
+npm run build      # Production build to dist/
+npm run preview    # Preview production build
+npm run lint       # Run ESLint
+```
 
-Currently there are no dependencies, build tools, or environment requirements. Expected additions:
-
-- Package manager and dependency manifest (e.g., `package.json`, `pyproject.toml`)
-- Runtime/language version (add `.nvmrc`, `.python-version`, or equivalent)
-- Environment variable template (`.env.example`)
-- Local dev server command
+No environment variables or external services are required.
 
 ## Directory Structure
 
-> Update this section as directories are created.
-
 ```
 visionboard/
-├── CLAUDE.md       # This file
-└── README.md       # Project description (currently placeholder)
+├── index.html                    # Entry HTML (loads Google Fonts)
+├── package.json
+├── vite.config.js
+├── eslint.config.js
+├── src/
+│   ├── main.jsx                  # App entry — BrowserRouter + BoardProvider
+│   ├── App.jsx                   # Root layout — header + routes
+│   ├── index.css                 # Global styles + CSS custom properties
+│   ├── context/
+│   │   └── BoardContext.jsx      # Central state: boards, pins, CRUD operations
+│   ├── components/
+│   │   ├── BoardCard.jsx         # Board preview card on home page
+│   │   ├── PinCard.jsx           # Image pin card with hover actions
+│   │   ├── CreateBoardModal.jsx  # Modal for creating new boards
+│   │   ├── AddPinModal.jsx       # Modal for adding/editing pins
+│   │   ├── Lightbox.jsx          # Full-screen image viewer
+│   │   └── ConfirmDialog.jsx     # Delete confirmation modal
+│   ├── pages/
+│   │   ├── HomePage.jsx          # Board listing + create board flow
+│   │   └── BoardPage.jsx         # Board detail — pins grid, room filter
+│   └── utils/
+│       ├── storage.js            # localStorage read/write helpers
+│       └── rooms.js              # Room category constants + colors
+└── public/
+    └── vite.svg
 ```
+
+## Architecture
+
+### State Management
+- **BoardContext** (`src/context/BoardContext.jsx`) is the single source of truth
+- Boards and pins are stored as a flat array of board objects, each containing a `pins` array
+- All CRUD operations go through context methods: `createBoard`, `updateBoard`, `deleteBoard`, `addPin`, `updatePin`, `deletePin`
+- State auto-persists to localStorage via a `useEffect` in the provider
+
+### Routing
+- `/` — Home page with board grid
+- `/board/:boardId` — Board detail with pins and room filtering
+
+### Styling Conventions
+- All styles live in `src/index.css` using BEM-like class naming
+- Design tokens are CSS custom properties on `:root` (colors, shadows, radii, fonts)
+- Fonts: Playfair Display (headings), Inter (body)
+- No component-level CSS files — keeps styles centralized
+
+### Room Categories
+- Defined in `src/utils/rooms.js` as a constant array
+- Used for pin categorization and board-level filtering
+- Categories: Living Room, Kitchen, Bedroom, Bathroom, Home Office, Dining Room, Outdoor, Garage, Entryway, Laundry, Nursery, Other
 
 ## Git Workflow
 
 - Default branch: `master`
-- Feature branches: use descriptive names (e.g., `feat/user-auth`, `fix/login-bug`)
-- Commit message style: imperative mood, present tense (e.g., "Add login form", not "Added login form")
+- Commit message style: imperative mood (e.g., "Add pin editing", not "Added pin editing")
 - Keep commits focused — one logical change per commit
 - Do not commit secrets, credentials, or `.env` files
 
 ## Code Conventions
 
-> Update this section once a language and framework are selected.
-
-Until the stack is established, the following general principles apply:
-
-- Prefer clarity over cleverness
-- Keep functions small and single-purpose
-- Avoid premature abstraction — three similar lines is better than a wrong abstraction
+- React functional components only — no class components
+- Use `useState`, `useMemo`, `useCallback` hooks (no external state libraries)
+- Named exports for context hooks, default exports for components
+- No TypeScript (plain JSX)
+- Prefer clarity over cleverness; avoid premature abstraction
 - Delete unused code rather than commenting it out
-- No trailing whitespace; files should end with a newline
-
-## Testing
-
-> Update this section once a test framework is configured.
-
-- Write tests for new features and bug fixes
-- Tests live alongside or near the code they test
-- All tests must pass before merging
-
-## Environment Variables
-
-> Update this section with required environment variables once configured.
-
-No environment variables are required yet. When they are needed:
-- Document each variable in `.env.example` with a comment explaining its purpose
-- Never commit actual secret values
-- Provide safe defaults for local development where possible
 
 ## AI Assistant Notes
 
-- This repository is in early stages — check whether files exist before attempting to edit them
-- When adding the first files, consider the overall project structure and establish clear conventions from the start
-- Update this CLAUDE.md whenever significant architectural decisions are made or new tooling is added
-- Prefer editing existing files over creating new ones unless a new module is clearly warranted
-- Do not add unnecessary comments, docstrings, or type annotations to code that was not changed
+- The app has no backend — all data lives in localStorage
+- When adding features, update BoardContext with any new state operations
+- New room categories should be added to `src/utils/rooms.js`
+- New routes go in `src/App.jsx`, new pages in `src/pages/`
+- Styles go in `src/index.css` — keep it centralized
+- Run `npm run build` to verify changes compile successfully
+- Update this CLAUDE.md when significant architectural changes are made
